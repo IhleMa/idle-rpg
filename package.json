@@ -1,0 +1,20 @@
+{
+  "name": "idle-rpg",
+  "version": "0.1.0",
+  "description": "Realms of Ashenvale - a persistent multiplayer fantasy idle RPG with exploration, gathering, crafting, combat, a player-driven Auction House and a PvP Arena.",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node --no-warnings server/index.js",
+    "dev": "node --no-warnings --watch server/index.js",
+    "seed": "node --no-warnings scripts/seed.js",
+    "test": "node --no-warnings --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
