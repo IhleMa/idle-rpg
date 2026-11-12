@@ -1,0 +1,113 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2026-11-12T02:00:00+01:00",
+    "name": "Realms of Ashenvale",
+    "author": "IhleMa",
+    "description": "Realms of Ashenvale - a persistent multiplayer fantasy idle RPG (Node.js + SQLite). Players connect with a web browser to the server address and port.",
+    "features": null,
+    "docker_images": {
+        "Node.js 22": "ghcr.io/parkervcp/yolks:nodejs_22",
+        "Node.js 24": "ghcr.io/parkervcp/yolks:nodejs_24"
+    },
+    "file_denylist": [],
+    "startup": "if [[ -d .git ]] && [[ \"{{AUTO_UPDATE}}\" == \"1\" ]]; then git pull --ff-only && npm install --omit=dev --no-audit --no-fund; fi; mkdir -p data; if [[ \"{{SEED_DEMO}}\" == \"1\" ]]; then DB_FILE=/home/container/data/game.db node --no-warnings scripts/seed.js; fi; PORT={{SERVER_PORT}} HOST=0.0.0.0 DB_FILE=/home/container/data/game.db COOKIE_SECURE={{COOKIE_SECURE}} TRUST_PROXY={{TRUST_PROXY}} node --no-warnings server/index.js",
+    "config": {
+        "files": "{}",
+        "startup": "{\"done\":\"Realms of Ashenvale running at\"}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Realms of Ashenvale - Pterodactyl install script\nset -e\napt-get update -qq && apt-get install -y -qq git ca-certificates > /dev/null\n\nmkdir -p /mnt/server\ncd /mnt/server\n\nGIT_ADDRESS=\"${GIT_ADDRESS:-https://github.com/IhleMa/idle-rpg}\"\nBRANCH=\"${BRANCH:-main}\"\n[[ \"${GIT_ADDRESS}\" != *.git ]] && GIT_ADDRESS=\"${GIT_ADDRESS}.git\"\nif [[ -n \"${USERNAME}\" && -n \"${ACCESS_TOKEN}\" ]]; then\n  GIT_ADDRESS=\"https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e \"${GIT_ADDRESS}\" | cut -d/ -f3-)\"\nfi\n\nif [[ -d .git ]]; then\n  echo \"Existing install found - updating to latest ${BRANCH} (your data/ folder is kept).\"\n  git remote set-url origin \"${GIT_ADDRESS}\"\n  git fetch origin \"${BRANCH}\"\n  git reset --hard \"origin/${BRANCH}\"\nelse\n  echo \"Cloning ${BRANCH} from repository...\"\n  rm -rf /tmp/game && git clone --depth 1 --branch \"${BRANCH}\" \"${GIT_ADDRESS}\" /tmp/game\n  cp -a /tmp/game/. /mnt/server/\n  rm -rf /tmp/game\nfi\n\necho \"Installing Node.js dependencies...\"\nnpm install --omit=dev --no-audit --no-fund\n\nmkdir -p /mnt/server/data\necho \"Install complete.\"\n",
+            "container": "node:22-bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Git Repository",
+            "description": "Repository to install the game from.",
+            "env_variable": "GIT_ADDRESS",
+            "default_value": "https://github.com/IhleMa/idle-rpg",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Branch",
+            "description": "Branch to install and update from.",
+            "env_variable": "BRANCH",
+            "default_value": "main",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:100",
+            "field_type": "text"
+        },
+        {
+            "name": "Git Username",
+            "description": "Only needed if the repository is private.",
+            "env_variable": "USERNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Git Access Token",
+            "description": "GitHub personal access token - only needed if the repository is private.",
+            "env_variable": "ACCESS_TOKEN",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Auto Update",
+            "description": "Pull the latest code from the branch on every start (1 = on, 0 = off). Player data is never touched.",
+            "env_variable": "AUTO_UPDATE",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Seed Demo Players",
+            "description": "Create 10 demo players so the Arena and Auction House have activity (1 = on). Safe to leave on; existing demo players are skipped.",
+            "env_variable": "SEED_DEMO",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Secure Cookies",
+            "description": "Set to 1 only if players reach the game over HTTPS (e.g. behind a reverse proxy with SSL).",
+            "env_variable": "COOKIE_SECURE",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Behind Reverse Proxy",
+            "description": "Set to 1 if the game is served through a reverse proxy (nginx, Cloudflare) so rate limits see real player IPs.",
+            "env_variable": "TRUST_PROXY",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "field_type": "text"
+        }
+    ]
+}
