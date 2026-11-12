@@ -17,6 +17,14 @@ Demo accounts created by `npm run seed` log in as `demo_<name>` (e.g. `demo_kael
 
 Environment variables: `PORT` (default 3000), `DB_FILE` (default `data/game.db`), `COOKIE_SECURE=1` when served over HTTPS.
 
+## Hosting on Pterodactyl
+
+1. In the admin panel go to **Nests → Import Egg** and upload `pterodactyl/egg-realms-of-ashenvale.json` (pick or create a nest, e.g. "Games").
+2. Create a server with that egg. Give it one allocation (port), about 512 MB RAM and 1 GB disk.
+3. Start it. The console shows `Realms of Ashenvale running at …` when ready; players open `http://<your-node-address>:<port>` in a browser.
+
+Egg variables: **Auto Update** pulls the latest code on every start; **Seed Demo Players** adds 10 demo players; **Secure Cookies** and **Behind Reverse Proxy** are for serving it over HTTPS through nginx/Cloudflare. **Git Username/Access Token** are only needed if the repository is private. All player data lives in `data/game.db` and survives updates and reinstalls (back that file up).
+
 ## What's in the game
 
 | Phase | Systems |
